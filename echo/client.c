@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     //设置服务器地址
     bzero(&serveraddr, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
-    serveraddr.sin_port       = htons(9999);    //服务器进程端口号
+    serveraddr.sin_port       = htons(8888);    //服务器进程端口号
     //把字符串形式的点分IP地址转换为二进制数值型的IP地址
     if (inet_pton(AF_INET, argv[1], &serveraddr.sin_addr) <= 0)
     {
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     //客户端(sockfd)的IP地址和端口号自动分配
     if (connect(sockfd, (SA*)&serveraddr, sizeof(serveraddr)) < 0)
     {
-        printf("connect error");
+        perror("connect error");
         return -1;
     }
 
