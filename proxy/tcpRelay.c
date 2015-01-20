@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
         //查看已建立的连接中是否有数据交换
         for (i = 0; i < MAXCLIENT; i++)
         {
-            if (connected[i].clifd == 0)
+            if (connected[i].clifd == 0 && connected[i].servfd == 0)
                 continue;
             
             if (FD_ISSET(connected[i].clifd, &readfds))
@@ -151,9 +151,10 @@ int main(int argc, char *argv[])
                 //客户端关闭
                 else if (n == 0)
                 {
-                    close(connected[i].servfd); //关闭服务器端连接
+                    if (connected[i].servfd != 0)
+                        shutdown(connected[i].servfd, SHUT_WR); //关闭服务器端连接
+                    close(connected[i].clifd);
                     connected[i].clifd = 0;     //不可能再从客户端读数据
-     //               connected[i].servfd = 0;  //应该可以以读状态监听sevfd， 
                 }
                 else
                 {
@@ -173,7 +174,9 @@ int main(int argc, char *argv[])
                 //服务器端关闭
                 else if (n == 0)
                 {
-                    close(connected[i].clifd); //关闭服务器端连接
+                    if (connected[i].clifd)
+                        shutdown(connected[i].clifd, SHUT_WR); //关闭服务器端连接
+                    close(connected[i].servfd);
                     connected[i].servfd = 0;
                 }
                 else
